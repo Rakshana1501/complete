@@ -1,55 +1,39 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import UpdateUser from "./update";
-import DeleteUser from "./delete";
+import React from "react";
 
-const ReadUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [editUser, setEditUser] = useState(null);
-
-  useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
-  const handleUserCreated = (newUser) => {
-    setUsers([...users, newUser]);
-  };
-
-  const handleUserUpdated = (updatedUser) => {
-    setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
-    setEditUser(null);
-  };
-
-  const handleUserDeleted = (id) => {
-    setUsers(users.filter((u) => u.id !== id));
-  };
-
+const Read = ({ users }) => {
   return (
     <div>
-      <h2>Users List</h2>
-      <ul>
-        {users.map((u) => (
-          <li key={u.id}>
-            <b>{u.name}</b> ({u.username}, {u.email})  
-            <br />
-            Address: {u.address.street}, {u.address.city}, {u.address.zipcode}  
-            <br />
-            Geo: {u.address.geo?.lat}, {u.address.geo?.lng}
-            <br />
-            <button onClick={() => setEditUser(u)}>✏️ Update</button>
-            <DeleteUser id={u.id} onUserDeleted={handleUserDeleted} />
-          </li>
-        ))}
-      </ul>
-
-      {editUser && (
-        <UpdateUser user={editUser} onUserUpdated={handleUserUpdated} />
+      <h2>Read Users</h2>
+      {users.length === 0 ? (
+        <p>No users available.</p>
+      ) : (
+        users.map((u) => (
+          <div
+            key={u.id}
+            style={{ border: "1px solid gray", margin: "5px", padding: "5px" }}
+          >
+            <p><b>ID:</b> {u.id}</p>
+            <p><b>Name:</b> {u.name}</p>
+            <p><b>Username:</b> {u.username}</p>
+            <p><b>Email:</b> {u.email}</p>
+            {u.address && (
+              <>
+                <p>
+                  <b>Address:</b> {u.address.street}, {u.address.suite},{" "}
+                  {u.address.city}, {u.address.zipcode}
+                </p>
+                {u.address.geo && (
+                  <p>
+                    <b>Geo:</b> Lat: {u.address.geo.lat}, Lng: {u.address.geo.lng}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        ))
       )}
     </div>
   );
 };
 
-export default ReadUsers;
+export default Read;
