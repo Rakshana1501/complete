@@ -1,29 +1,51 @@
-import React from "react";
-import { Route, Routes, Link } from "react-router-dom";
-import CreateUser from "./day2";
-import ReadUsers from "./read";
-import UpdateUser from "./update";
-import DeleteUser from "./delete";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import Create from "./Create";
+import Read from "./Read";
+import Update from "./Update";
+import DeleteUser from "./Delete";
 
 const App = () => {
-  return (
-    <>
-      <nav style={{ marginBottom: "20px" }}>
-        <Link to="/create">Create</Link> |{" "}
-        <Link to="/read">Read</Link> |{" "}
-        <Link to="/update">Update</Link> |{" "}
-        <Link to="/delete">Delete</Link>
-      </nav>
+  const [users, setUsers] = useState([]);
 
-      <Routes>
-        <Route path="/" element={<CreateUser />} />
-        <Route path="/create" element={<CreateUser />} />
-        <Route path="/read" element={<ReadUsers />} />
-        <Route path="/update" element={<UpdateUser />} />
-        <Route path="/delete" element={<DeleteUser />} />
-      </Routes>
-    </>
-  );
+  // load initial dummy users from API
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((res) => res.json())
+      .then((data) => setUsers(data));
+  }, []);
+
+  return (
+  <div style={{ padding: "20px" }}>
+    <h1>CRUD with Dummy API</h1>
+
+    {/* Navigation */}
+    <nav style={{ marginBottom: "20px" }}>
+      <Link to="/create" style={styles.link}>Create</Link>
+      <Link to="/read" style={styles.link}>Read</Link>
+      <Link to="/update" style={styles.link}>Update</Link>
+      <Link to="/delete" style={styles.link}>Delete</Link>
+    </nav>
+
+    {/* Routes */}
+    <Routes>
+      <Route path="/" element={<Create users={users} setUsers={setUsers} />} />
+      <Route path="/create" element={<Create users={users} setUsers={setUsers} />} />
+      <Route path="/read" element={<Read users={users} />} />
+      <Route path="/update" element={<Update users={users} setUsers={setUsers} />} />
+      <Route path="/delete" element={<DeleteUser users={users} setUsers={setUsers} />} />
+    </Routes>
+  </div>
+);
+};
+
+const styles = {
+  link: {
+    marginRight: "15px",
+    textDecoration: "none",
+    color: "blue",
+    fontWeight: "bold"
+  }
 };
 
 export default App;
